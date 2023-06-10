@@ -29,13 +29,14 @@ func main() {
 
 	port := os.Getenv("PORT")
 	r := chi.NewRouter()
-	subRouter := chi.NewRouter()
+	apiRouter := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{AllowedOrigins: []string{"*"}}))
-	r.Mount("/v1", subRouter)
+	r.Mount("/v1", apiRouter)
 	
-	subRouter.Get("/readiness", readinessHandler)
-	subRouter.Get("/err", errHandler)
-	subRouter.Post("/users", apiCfg.createUserHandler)
+	apiRouter.Get("/readiness", readinessHandler)
+	apiRouter.Get("/err", errHandler)
+	apiRouter.Get("/users", apiCfg.getUserHandler) // get current user (Auth ApiKey Route)
+	apiRouter.Post("/users", apiCfg.createUserHandler)
 
 	server := &http.Server{
 		Addr:    ":" + port,
