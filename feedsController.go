@@ -44,3 +44,12 @@ func (cfg *apiConfig) postFeedHandler(w http.ResponseWriter, r *http.Request, us
 	// Return created feed
 	respondWithJSON(w, http.StatusOK, feed)
 }
+
+func (cfg *apiConfig) getFeedsHandler(w http.ResponseWriter, r *http.Request) {
+	feeds, err := cfg.DB.GetFeeds(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+	}
+
+	respondWithJSON(w, http.StatusOK, feeds)
+}

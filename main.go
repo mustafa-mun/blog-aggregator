@@ -39,8 +39,11 @@ func main() {
 	
 	apiRouter.Get("/readiness", readinessHandler)
 	apiRouter.Get("/err", errHandler)
-	apiRouter.Get("/users", apiCfg.middlewareAuth(apiCfg.getUserHandler)) // get current user (Auth ApiKey Route)
+	
+	apiRouter.Get("/users", apiCfg.middlewareAuth(apiCfg.getUserHandler)) // get current user (Auth ApiKey Route
 	apiRouter.Post("/users", apiCfg.createUserHandler)
+
+	apiRouter.Get("/feeds", apiCfg.getFeedsHandler)
 	apiRouter.Post("/feeds", apiCfg.middlewareAuth(apiCfg.postFeedHandler))
 
 	server := &http.Server{
