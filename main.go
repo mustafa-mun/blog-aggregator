@@ -13,6 +13,10 @@ import (
 	"github.com/mustafa-mun/blog-aggregator/internal/database"
 )
 
+type AuthHandler interface {
+	func(http.ResponseWriter, *http.Request, database.User)
+}
+
 type apiConfig struct {
 	DB *database.Queries
 }
@@ -35,7 +39,7 @@ func main() {
 	
 	apiRouter.Get("/readiness", readinessHandler)
 	apiRouter.Get("/err", errHandler)
-	apiRouter.Get("/users", apiCfg.getUserHandler) // get current user (Auth ApiKey Route)
+	apiRouter.Get("/users", apiCfg.middlewareAuth(apiCfg.getUserHandler)) // get current user (Auth ApiKey Route)
 	apiRouter.Post("/users", apiCfg.createUserHandler)
 
 	server := &http.Server{
@@ -57,6 +61,9 @@ func readinessHandler(w http.ResponseWriter, r *http.Request) {
 func errHandler(w http.ResponseWriter, r *http.Request) {
 	respondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 }
+
+
+
 
 
 

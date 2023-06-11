@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -41,22 +40,6 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 	respondWithJSON(w, http.StatusOK, user)
 }
 
-func (cfg *apiConfig) getUserHandler(w http.ResponseWriter, r *http.Request) {
-	// get api key from auth header
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-    // Handle the case when Authorization header is missing or empty
-		respondWithError(w, http.StatusUnauthorized, "missing api key")
-		return
-	}
-	apiKey := strings.Split(authHeader, " ")[1]
-
-	user, err := cfg.DB.GetUser(r.Context(), apiKey)
-
-	if err != nil {
-		respondWithError(w, http.StatusNotFound, err.Error())
-		return
-	}
-	// user is found
+func (cfg *apiConfig) getUserHandler(w http.ResponseWriter, r *http.Request, user database.User) {
 	respondWithJSON(w, http.StatusOK, user)
 }
