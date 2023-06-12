@@ -41,8 +41,24 @@ func (cfg *apiConfig) postFeedHandler(w http.ResponseWriter, r *http.Request, us
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	// also create feed follow for the feed and user
+	feedFollow, err := cfg.createFeedFollow(user.ID, feed.ID, r)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respBody := struct {
+		Feed database.Feed `json:"feed"`
+		FeedFollow database.Feedfollow `json:"feed_follow"`
+	}{
+		Feed: feed,
+		FeedFollow: feedFollow,
+	}
+
 	// Return created feed
-	respondWithJSON(w, http.StatusOK, feed)
+	respondWithJSON(w, http.StatusOK, respBody)
 }
 
 func (cfg *apiConfig) getFeedsHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,25 +85,33 @@ func (cfg *apiConfig) postFeedFollowHandler(w http.ResponseWriter, r *http.Reque
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	newUUID := uuid.New()
-	Uuuid, err := uuid.Parse(params.FeedId)
+	feedId, err := uuid.Parse(params.FeedId)
+	if err != nil {
+		// handle decode parameters error 
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	feedFollow, err := cfg.createFeedFollow(user.ID, feedId, r)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	respondWithJSON(w, http.StatusOK, feedFollow)
+}
+
+
+func(cfg *apiConfig) createFeedFollow(userID, feedID uuid.UUID, r *http.Request) (database.Feedfollow, error){
+	newUUID := uuid.New()
 	feedFollowParams := database.CreateFeedFollowParams{
 		ID: newUUID,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		UserID: user.ID,
-		FeedID: uuid.UUID(Uuuid),
+		UserID:userID,
+		FeedID: feedID,
 	}
-
 	feedFollow, err := cfg.DB.CreateFeedFollow(r.Context(), feedFollowParams)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
+		return database.Feedfollow{}, err
 	}
-	
-	respondWithJSON(w, http.StatusOK, feedFollow)
+	return feedFollow, nil
 }
