@@ -53,3 +53,41 @@ func (cfg *apiConfig) getFeedsHandler(w http.ResponseWriter, r *http.Request) {
 
 	respondWithJSON(w, http.StatusOK, feeds)
 }
+
+
+func (cfg *apiConfig) postFeedFollowHandler(w http.ResponseWriter, r *http.Request, user database.User) {
+	// decode the json request body
+	type parameters struct {
+		FeedId string `json:"feed_id"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	params := parameters{}
+	err := decoder.Decode(&params)
+	if err != nil {
+		// handle decode parameters error 
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	newUUID := uuid.New()
+	Uuuid, err := uuid.Parse(params.FeedId)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	feedFollowParams := database.CreateFeedFollowParams{
+		ID: newUUID,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID: user.ID,
+		FeedID: uuid.UUID(Uuuid),
+	}
+
+	feedFollow, err := cfg.DB.CreateFeedFollow(r.Context(), feedFollowParams)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	
+	respondWithJSON(w, http.StatusOK, feedFollow)
+}

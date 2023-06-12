@@ -40,11 +40,12 @@ func main() {
 	apiRouter.Get("/readiness", readinessHandler)
 	apiRouter.Get("/err", errHandler)
 	
-	apiRouter.Get("/users", apiCfg.middlewareAuth(apiCfg.getUserHandler)) // get current user (Auth ApiKey Route
-	apiRouter.Post("/users", apiCfg.createUserHandler)
+	apiRouter.Get("/users", apiCfg.middlewareAuth(apiCfg.getUserHandler)) // get current user (Auth Route)
+	apiRouter.Post("/users", apiCfg.createUserHandler) // create user
 
-	apiRouter.Get("/feeds", apiCfg.getFeedsHandler)
-	apiRouter.Post("/feeds", apiCfg.middlewareAuth(apiCfg.postFeedHandler))
+	apiRouter.Get("/feeds", apiCfg.getFeedsHandler) // get feeds
+	apiRouter.Post("/feeds", apiCfg.middlewareAuth(apiCfg.postFeedHandler)) // create feed (Auth Route)
+	apiRouter.Post("/feed_follows", apiCfg.middlewareAuth(apiCfg.postFeedFollowHandler)) // create feed handler (Auth Route)
 
 	server := &http.Server{
 		Addr:    ":" + port,
