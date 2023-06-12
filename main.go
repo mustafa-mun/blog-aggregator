@@ -46,6 +46,7 @@ func main() {
 	apiRouter.Get("/feeds", apiCfg.getFeedsHandler) // get feeds
 	apiRouter.Post("/feeds", apiCfg.middlewareAuth(apiCfg.postFeedHandler)) // create feed (Auth Route)
 	apiRouter.Post("/feed_follows", apiCfg.middlewareAuth(apiCfg.postFeedFollowHandler)) // create feed handler (Auth Route)
+	apiRouter.Delete("/feed_follows/{feedFollowID}", apiCfg.middlewareAuth(apiCfg.deleteFeedFollowHandler)) // delete feed handler (Auto Route)
 
 	server := &http.Server{
 		Addr:    ":" + port,
