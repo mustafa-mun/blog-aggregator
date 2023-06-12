@@ -7,6 +7,10 @@ RETURNING *;
 SELECT * FROM feedFollows 
 WHERE id = $1;
 
+-- name: GetFeedFollows :many
+SELECT * FROM feedFollows
+WHERE user_id = $1;
+
 -- name: DeleteFeedFollow :one
 DELETE FROM feedFollows WHERE id= $1
 RETURNING *;
