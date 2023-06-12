@@ -45,7 +45,7 @@ func (cfg *apiConfig) postFeedHandler(w http.ResponseWriter, r *http.Request, us
 	// also create feed follow for the feed and user
 	feedFollow, err := cfg.createFeedFollow(user.ID, feed.ID, r)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -93,7 +93,7 @@ func (cfg *apiConfig) postFeedFollowHandler(w http.ResponseWriter, r *http.Reque
 	}
 	feedFollow, err := cfg.createFeedFollow(user.ID, feedId, r)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
+		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 	respondWithJSON(w, http.StatusOK, feedFollow)
