@@ -31,12 +31,16 @@ func main() {
 	dbQueries := database.New(db)
 	apiCfg := apiConfig{DB: dbQueries}
 
+
 	port := os.Getenv("PORT")
 	r := chi.NewRouter()
 	apiRouter := chi.NewRouter()
 	r.Use(cors.Handler(cors.Options{AllowedOrigins: []string{"*"}}))
 	r.Mount("/v1", apiRouter)
 	
+
+	// apiRouter.Get("/test", testFetchFeed)
+
 	apiRouter.Get("/readiness", readinessHandler)
 	apiRouter.Get("/err", errHandler)
 	
